@@ -1,17 +1,3 @@
-params.outdir = 'results'
-
-primer_pair_tuples = Channel.fromList([
-    ['357wF806R', 'CCTACGGGNGGCWGCAG', 'GGACTACHVGGGTWTCTAAT'],
-    ['515F806R', 'GTGYCAGCMGCCGCGGTAA', 'GGACTACNVGGGTWTCTAAT'],
-/*    ['357wF805R', 'CCTACGGGNGGCWGCAG',	'GACTACHVGGGTATCTAATCC'],
-*    ['357wF806R', 'CCTACGGGNGGCWGCAG', 'GGACTACHVGGGTWTCTAAT'],
-*    ['515F806R', 'GTGYCAGCMGCCGCGGTAA', 'GGACTACNVGGGTWTCTAAT'],
-*    ['515F926R', 'GTGYCAGCMGCCGCGGTAA', 'CCGYCAATTYMTTTRAGTTT'],
-*    ['515F944R', 'GTGCCAGCMGCCGCGGTAA', 'GAATTAAACCACATGCTC'],
-*    ['939F1378R', 'GAATTGACGGGGGCCCGCACAAG', 'CGGTGTGTACAAGGCCCGGGAACG'],
-*/
-    ])
-
 include { 
     GET_GTDB;
     GTDB_DEREP as FULL_DEREP;
@@ -21,6 +7,7 @@ include {
     GTDB_TRAIN as AMP_TRAIN;
  } from '../modules/gtdb_modules.nf'
 
+primer_pair_tuples = Channel.fromList(params.primer_pairs)
 
 workflow MAKE_GTDB_CLASSIFIERS {
     gtdb_db_ch = GET_GTDB()
