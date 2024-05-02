@@ -6,15 +6,17 @@ process GET_GTDB {
     
     publishDir params.outdir, mode: 'copy'
  
+    cpus 1
+
     output:        
         tuple val('full_gtdb'), path('gtdb_seqs.qza'), path('gtdb_tax.qza'), emit: gtdb_data
    
     script:
         """
         qiime rescript  get-gtdb-data \
-            --p-version '214.1' \
-            --p-domain 'Both' \
-            --p-db-type 'SpeciesReps' \
+            --p-version ${params.get_gtdb.version} \
+            --p-domain ${params.get_gtdb.domain} \
+            --p-db-type ${params.get_gtdb.dbtype} \
             --o-gtdb-sequences 'gtdb_seqs.qza' \
             --o-gtdb-taxonomy 'gtdb_tax.qza'
         """
@@ -29,6 +31,8 @@ process GTDB_DEREP {
     
     publishDir params.outdir, mode: 'copy'
     
+    cpus "${params.derep.threads}"
+
     input:
         tuple val(amp_reg), path(gtdb_seqs), path(gtdb_taxa)
     
@@ -40,8 +44,8 @@ process GTDB_DEREP {
         qiime rescript dereplicate \
             --i-sequences ${gtdb_seqs} \
             --i-taxa ${gtdb_taxa} \
-            --p-mode 'uniq' \
-            --p-threads 1 \
+            --p-mode ${params.derep.mode} \
+            --p-threads ${params.derep.threads} \
             --o-dereplicated-sequences '${amp_reg}_derep_seqs.qza' \
             --o-dereplicated-taxa '${amp_reg}_derep_taxa.qza'
     """
@@ -62,7 +66,9 @@ process GTDB_AMP_REG_EXTRACT {
     
     publishDir params.outdir, mode: 'copy'
 
-   input:
+    cpus "${params.amp_extract.jobs}"
+
+    input:
         tuple val(full_amp), path(gtdb_seqs), path(gtdb_taxa)
         tuple val(amp_region), val(fw_primer), val(rev_primer)
     
@@ -75,7 +81,7 @@ process GTDB_AMP_REG_EXTRACT {
             --i-sequences ${gtdb_seqs} \
             --p-f-primer ${fw_primer} \
             --p-r-primer ${rev_primer} \
-            --p-n-jobs 1 \
+            --p-n-jobs ${params.amp_extract.jobs} \
             --p-read-orientation 'forward' \
             --o-reads '${amp_region}_seqs.qza'
         """
@@ -87,6 +93,8 @@ process GTDB_TRAIN {
     tag 'Train GTDB classifier.'
     
     publishDir params.outdir, mode: 'copy'
+
+    cpus 1
 
     input:
         tuple val(amp_reg), path(gtdb_seqs), path(gtdb_taxa)
