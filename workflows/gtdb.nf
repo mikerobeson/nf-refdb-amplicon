@@ -9,11 +9,14 @@ include {
 
 primer_pair_tuples = Channel.fromList(params.primer_pairs)
 
+
 workflow MAKE_GTDB_CLASSIFIERS {
-    gtdb_db_ch = GET_GTDB()
-    gtdb_derep_ch = FULL_DEREP(gtdb_db_ch)
-    gtdb_amp_reg_extract_ch = GTDB_AMP_REG_EXTRACT(gtdb_derep_ch, primer_pair_tuples)
-    gtdb_amp_reg_derep_ch = AMP_DEREP(gtdb_amp_reg_extract_ch)
-    gtdb_full_train_ch = FULL_TRAIN(gtdb_derep_ch)
-    gtdb_amp_train_ch = AMP_TRAIN(gtdb_amp_reg_derep_ch)
+    GET_GTDB()
+
+    FULL_DEREP(GET_GTDB.out.gtdb_seqs, GET_GTDB.out.gtdb_taxa)
+    FULL_TRAIN(FULL_DEREP.out.derep_seqs, FULL_DEREP.out.derep_taxa)
+
+    GTDB_AMP_REG_EXTRACT(FULL_DEREP.out.derep_seqs, primer_pair_tuples)
+    AMP_DEREP(GTDB_AMP_REG_EXTRACT.out.extract_amp, FULL_DEREP.out.derep_taxa)
+    AMP_TRAIN(AMP_DEREP.out.derep_seqs, AMP_DEREP.out.derep_taxa)
 }

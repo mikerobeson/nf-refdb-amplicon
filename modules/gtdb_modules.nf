@@ -9,8 +9,8 @@ process GET_GTDB {
     cpus 1
 
     output:        
-        tuple val('full_gtdb'), path('gtdb_seqs.qza'), path('gtdb_tax.qza'), emit: gtdb_data
-   
+       tuple val('full'), path('gtdb_seqs.qza'), emit: gtdb_seqs
+       tuple val('full'), path('gtdb_taxa.qza'), emit: gtdb_taxa
     script:
         """
         qiime rescript  get-gtdb-data \
@@ -18,7 +18,7 @@ process GET_GTDB {
             --p-domain ${params.get_gtdb.domain} \
             --p-db-type ${params.get_gtdb.dbtype} \
             --o-gtdb-sequences 'gtdb_seqs.qza' \
-            --o-gtdb-taxonomy 'gtdb_tax.qza'
+            --o-gtdb-taxonomy 'gtdb_taxa.qza'
         """
 }
 
@@ -34,10 +34,19 @@ process GTDB_DEREP {
     cpus "${params.derep.threads}"
 
     input:
-        tuple val(amp_reg), path(gtdb_seqs), path(gtdb_taxa)
-    
+        tuple val(amp_reg), path(gtdb_seqs) 
+        tuple val(amp_reg_tax), path(gtdb_taxa)
+        /*
+        * We assign `amp_reg_tax` as this can be different to `amp_reg`,
+        * when we need the full taxonomy for dereplication the amplicon seqs.
+        * That is `amp_reg` and `amp_reg_tax` will not be the same in this case.
+        * Also meaning if we use `amp_reg` for both the latter will overwrite the
+        * variable messing up the outfile names and the pipeline.
+        */
+
     output:
-        tuple val(amp_reg), path("${amp_reg}_derep_seqs.qza"), path("${amp_reg}_derep_taxa.qza"), emit: derep
+        tuple val(amp_reg), path("gtdb_${amp_reg}_derep_seqs.qza"), emit: derep_seqs
+        tuple val(amp_reg), path("gtdb_${amp_reg}_derep_taxa.qza"), emit: derep_taxa
     
     script:
         """
@@ -46,8 +55,8 @@ process GTDB_DEREP {
             --i-taxa ${gtdb_taxa} \
             --p-mode ${params.derep.mode} \
             --p-threads ${params.derep.threads} \
-            --o-dereplicated-sequences '${amp_reg}_derep_seqs.qza' \
-            --o-dereplicated-taxa '${amp_reg}_derep_taxa.qza'
+            --o-dereplicated-sequences 'gtdb_${amp_reg}_derep_seqs.qza' \
+            --o-dereplicated-taxa 'gtdb_${amp_reg}_derep_taxa.qza'
     """
 }
 
@@ -69,11 +78,11 @@ process GTDB_AMP_REG_EXTRACT {
     cpus "${params.amp_extract.jobs}"
 
     input:
-        tuple val(full_amp), path(gtdb_seqs), path(gtdb_taxa)
+        tuple val(full_amp), path(gtdb_seqs)
         tuple val(amp_region), val(fw_primer), val(rev_primer)
     
     output:
-        tuple val(amp_region), path("${amp_region}_seqs.qza"), path(gtdb_taxa), emit: extract_amp
+        tuple val(amp_region), path("gtdb_${amp_region}_seqs.qza"), emit: extract_amp
     
     script:
         """
@@ -83,7 +92,7 @@ process GTDB_AMP_REG_EXTRACT {
             --p-r-primer ${rev_primer} \
             --p-n-jobs ${params.amp_extract.jobs} \
             --p-read-orientation 'forward' \
-            --o-reads '${amp_region}_seqs.qza'
+            --o-reads 'gtdb_${amp_region}_seqs.qza'
         """
 }
 
@@ -97,17 +106,18 @@ process GTDB_TRAIN {
     cpus 1
 
     input:
-        tuple val(amp_reg), path(gtdb_seqs), path(gtdb_taxa)
+        tuple val(amp_reg), path(gtdb_seqs)
+        tuple val(amp_reg), path(gtdb_taxa)
         
     output:
-        tuple val(amp_reg), path("${amp_reg}_classifier.qza"), emit: classifier
+        tuple val(amp_reg), path("gtdb_${amp_reg}_classifier.qza"), emit: classifier
         
     script:
         """
         qiime feature-classifier fit-classifier-naive-bayes \
             --i-reference-reads '${gtdb_seqs}' \
             --i-reference-taxonomy '${gtdb_taxa}' \
-            --o-classifier '${amp_reg}_classifier.qza'
+            --o-classifier 'gtdb_${amp_reg}_classifier.qza'
         """
 
 }
