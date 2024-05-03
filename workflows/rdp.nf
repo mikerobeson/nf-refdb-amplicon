@@ -1,6 +1,7 @@
-include { 
-    GET_GTDB;
- } from '../modules/gtdb_modules.nf'
+include {
+    GET_RDP;
+    IMPORT_RDP;
+} from '../modules/rdp_modules.nf'
 
 include { 
     DEREP as FULL_DEREP;
@@ -9,14 +10,14 @@ include {
     TRAIN_CLASSIFIER as FULL_TRAIN;
     TRAIN_CLASSIFIER as AMP_TRAIN;
  } from '../modules/base_modules.nf'
- 
-primer_pair_tuples = Channel.fromList(params.primer_pairs)
 
+ primer_pair_tuples = Channel.fromList(params.primer_pairs)
 
-workflow MAKE_GTDB_CLASSIFIERS {
-    GET_GTDB()
+ workflow MAKE_RDP_CLASSIFIERS {
+    GET_RDP()
+    IMPORT_RDP(GET_RDP.out.rdp_fasta, GET_RDP.out.rdp_tax_tsv)
 
-    FULL_DEREP(GET_GTDB.out.gtdb_seqs, GET_GTDB.out.gtdb_taxa)
+    FULL_DEREP(IMPORT_RDP.out.rdp_seqs, IMPORT_RDP.out.rdp_taxa)
     FULL_TRAIN(FULL_DEREP.out.derep_seqs, FULL_DEREP.out.derep_taxa)
 
     AMP_REG_EXTRACT(FULL_DEREP.out.derep_seqs, primer_pair_tuples)
