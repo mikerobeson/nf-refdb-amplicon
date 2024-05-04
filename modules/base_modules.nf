@@ -11,8 +11,8 @@ process DEREP {
     cpus "${params.derep.threads}"
 
     input:
-        tuple val(db), val(amp_reg), path(gtdb_seqs) 
-        tuple val(db), val(amp_reg_tax), path(gtdb_taxa)
+        tuple val(db), val(amp_reg), path(seqs) 
+        tuple val(db), val(amp_reg_tax), path(taxa)
         /*
         * We assign `amp_reg_tax` as this can be different to `amp_reg`,
         * when we need the full taxonomy for dereplication the amplicon seqs.
@@ -28,8 +28,8 @@ process DEREP {
     script:
         """
         qiime rescript dereplicate \
-            --i-sequences ${gtdb_seqs} \
-            --i-taxa ${gtdb_taxa} \
+            --i-sequences ${seqs} \
+            --i-taxa ${taxa} \
             --p-mode ${params.derep.mode} \
             --p-threads ${params.derep.threads} \
             --o-dereplicated-sequences '${db}_${amp_reg}_derep_seqs.qza' \
@@ -50,7 +50,7 @@ process AMP_REG_EXTRACT {
     cpus "${params.amp_extract.jobs}"
 
     input:
-        tuple val(db), val(full_amp), path(gtdb_seqs)
+        tuple val(db), val(full_amp), path(seqs)
         tuple val(amp_region), val(fw_primer), val(rev_primer)
     
     output:
@@ -59,7 +59,7 @@ process AMP_REG_EXTRACT {
     script:
         """
         qiime feature-classifier extract-reads \
-            --i-sequences ${gtdb_seqs} \
+            --i-sequences ${seqs} \
             --p-f-primer ${fw_primer} \
             --p-r-primer ${rev_primer} \
             --p-n-jobs ${params.amp_extract.jobs} \
@@ -76,10 +76,11 @@ process TRAIN_CLASSIFIER {
     publishDir params.outdir, mode: 'copy'
 
     cpus 1
+    memory '20 GB'
 
     input:
-        tuple val(db), val(amp_reg), path(gtdb_seqs)
-        tuple val(db), val(amp_reg), path(gtdb_taxa)
+        tuple val(db), val(amp_reg), path(seqs)
+        tuple val(db), val(amp_reg), path(taxa)
         
     output:
         tuple val(amp_reg), path("${db}_${amp_reg}_classifier.qza"), emit: classifier
@@ -87,8 +88,8 @@ process TRAIN_CLASSIFIER {
     script:
         """
         qiime feature-classifier fit-classifier-naive-bayes \
-            --i-reference-reads '${gtdb_seqs}' \
-            --i-reference-taxonomy '${gtdb_taxa}' \
+            --i-reference-reads '${seqs}' \
+            --i-reference-taxonomy '${taxa}' \
             --o-classifier '${db}_${amp_reg}_classifier.qza'
         """
 

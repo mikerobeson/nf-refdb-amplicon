@@ -11,6 +11,7 @@ process GET_GTDB {
     output:        
        tuple val('gtdb'), val('full'), path('gtdb_seqs.qza'), emit: gtdb_seqs
        tuple val('gtdb'), val('full'), path('gtdb_taxa.qza'), emit: gtdb_taxa
+       
     script:
         """
         qiime rescript  get-gtdb-data \
