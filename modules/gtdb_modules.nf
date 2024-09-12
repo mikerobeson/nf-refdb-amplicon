@@ -3,10 +3,10 @@ process GET_GTDB {
     conda "${params.qiime_conda_env}"
  
     tag 'Downloading GTDB data.'
-    
-    publishDir params.outdir, mode: 'copy'
  
     cpus 1
+    memory "${params.get_gtdb.memory}"
+
 
     output:        
        tuple val('gtdb'), val('full'), path('gtdb_seqs.qza'), emit: gtdb_seqs

@@ -3,10 +3,9 @@ process GET_SILVA {
     conda "${params.qiime_conda_env}"
  
     tag 'Downloading SILVA data.'
-    
-    publishDir params.outdir, mode: 'copy'
  
     cpus 1
+    memory "${params.get_silva.memory}"
 
     output:        
        tuple val('silva'), val('full'), path('silva_seqs.qza'), emit: silva_seqs
