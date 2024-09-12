@@ -14,3 +14,8 @@ conda activate nextflow
 cd nf-refdb-amplicon
 nextflow run main.nf
 ```
+
+## Cite
+If you make use of this pipeline please cite RESCRIPt:
+
+Michael S Robeson II, Devon R O'Rourke, Benjamin D Kaehler, Michal Ziemski, Matthew R Dillon, Jeffrey T Foster, Nicholas A Bokulich. (2021) RESCRIPt: Reproducible sequence taxonomy reference database management. PLoS Computational Biology 17 (11): e1009581. doi: [10.1371/journal.pcbi.1009581](http://dx.doi.org/10.1371/journal.pcbi.1009581).

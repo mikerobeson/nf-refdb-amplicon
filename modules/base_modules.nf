@@ -6,9 +6,8 @@ process DEREP {
     
     tag 'Dereplicating data.'
     
-    publishDir params.outdir, mode: 'copy'
-    
     cpus "${params.derep.threads}"
+    memory "${params.derep.memory}"
 
     input:
         tuple val(db), val(amp_reg), path(seqs) 
@@ -34,7 +33,7 @@ process DEREP {
             --p-threads ${params.derep.threads} \
             --o-dereplicated-sequences '${db}_${amp_reg}_derep_seqs.qza' \
             --o-dereplicated-taxa '${db}_${amp_reg}_derep_taxa.qza'
-    """
+        """
 }
 
 
@@ -44,10 +43,9 @@ process AMP_REG_EXTRACT {
     conda "${params.qiime_conda_env}"
     
     tag 'Extracting amplicon region with primers.'
-    
-    publishDir params.outdir, mode: 'copy'
 
     cpus "${params.amp_extract.jobs}"
+    memory "${params.amp_extract.memory}"
 
     input:
         tuple val(db), val(full_amp), path(seqs)
@@ -72,11 +70,9 @@ process TRAIN_CLASSIFIER {
    conda "${params.qiime_conda_env}"
     
     tag 'Train classifier.'
-    
-    publishDir params.outdir, mode: 'copy'
 
-    cpus 1
-    memory '20 GB'
+    cpus "${params.train.cpus}"
+    memory "${params.train.memory}"
 
     input:
         tuple val(db), val(amp_reg), path(seqs)
