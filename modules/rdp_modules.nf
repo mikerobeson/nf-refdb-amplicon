@@ -1,10 +1,8 @@
 process GET_RDP {
-    conda "${params.qiime_conda_env}"
- 
+
     tag 'Downloading RDP data.'
  
-    cpus 1
-    memory "${params.get_rdp.memory}"
+    label 'get_rdp'
 
     output:        
        path('RDPClassifier_16S_trainsetNo19_QiimeFormat/RefOTUs.fa'), emit: rdp_fasta
@@ -19,12 +17,10 @@ process GET_RDP {
 }
 
 process IMPORT_RDP {
-    conda "${params.qiime_conda_env}"
- 
+
     tag 'Importing RDP data.'
 
-    cpus 1
-    memory '1 GB'
+    label 'get_rdp'
     
     input:
         path(rdp_fasta)
