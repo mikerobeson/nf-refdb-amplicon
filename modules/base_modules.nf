@@ -1,13 +1,10 @@
 
 
 process DEREP {
-
-    conda "${params.qiime_conda_env}"
-    
+  
     tag 'Dereplicating data.'
     
-    cpus "${params.derep.threads}"
-    memory "${params.derep.memory}"
+    label 'derep'
 
     input:
         tuple val(db), val(amp_reg), path(seqs) 
@@ -30,22 +27,17 @@ process DEREP {
             --i-sequences ${seqs} \
             --i-taxa ${taxa} \
             --p-mode ${params.derep.mode} \
-            --p-threads ${params.derep.threads} \
+            --p-threads ${task.cpus} \
             --o-dereplicated-sequences '${db}_${amp_reg}_derep_seqs.qza' \
             --o-dereplicated-taxa '${db}_${amp_reg}_derep_taxa.qza'
         """
 }
 
-
-
 process AMP_REG_EXTRACT {
-
-    conda "${params.qiime_conda_env}"
     
     tag 'Extracting amplicon region with primers.'
 
-    cpus "${params.amp_extract.jobs}"
-    memory "${params.amp_extract.memory}"
+    label 'amp_reg_extract'
 
     input:
         tuple val(db), val(full_amp), path(seqs)
@@ -60,19 +52,17 @@ process AMP_REG_EXTRACT {
             --i-sequences ${seqs} \
             --p-f-primer ${fw_primer} \
             --p-r-primer ${rev_primer} \
-            --p-n-jobs ${params.amp_extract.jobs} \
+            --p-n-jobs ${task.cpus} \
             --p-read-orientation 'forward' \
             --o-reads '${db}_${amp_region}_seqs.qza'
         """
 }
 
 process TRAIN_CLASSIFIER {
-   conda "${params.qiime_conda_env}"
     
     tag 'Train classifier.'
 
-    cpus "${params.train.cpus}"
-    memory "${params.train.memory}"
+    label 'train_classifier'
 
     input:
         tuple val(db), val(amp_reg), path(seqs)

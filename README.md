@@ -12,8 +12,11 @@ conda activate nextflow
 **Run pipeline**
 ```
 cd nf-refdb-amplicon
+
 nextflow run main.nf
 ```
+
+*Note: add `-profile cluster` if running on HPC, or `-profile standard` if running locally.*
 
 ## Cite
 If you make use of this pipeline please cite RESCRIPt:
