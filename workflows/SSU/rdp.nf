@@ -1,7 +1,7 @@
 include {
     GET_RDP;
     IMPORT_RDP;
-} from '../modules/rdp_modules.nf'
+} from '../modules/SSU/rdp_modules.nf'
 
 include { 
     DEREP as FULL_DEREP_RDP;

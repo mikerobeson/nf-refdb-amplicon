@@ -1,6 +1,6 @@
 include { 
     GET_GTDB;
- } from '../modules/gtdb_modules.nf'
+ } from '../modules/SSU/gtdb_modules.nf'
 
 include { 
     DEREP as FULL_DEREP_GTDB;
