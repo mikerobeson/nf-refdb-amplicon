@@ -1,6 +1,6 @@
 include {
     GET_SILVA;
-} from '../modules/silva_modules.nf'
+} from '../../modules/SSU/silva_modules.nf'
 
 include { 
     DEREP as FULL_DEREP_SILVA;
@@ -8,7 +8,7 @@ include {
     AMP_REG_EXTRACT as AMP_REG_EXTRACT_SILVA;
     TRAIN_CLASSIFIER as FULL_TRAIN_SILVA;
     TRAIN_CLASSIFIER as AMP_TRAIN_SILVA;
- } from '../modules/base_modules.nf'
+ } from '../../modules/base_modules.nf'
 
  primer_pair_tuples = Channel.fromList(params.primer_pairs)
 

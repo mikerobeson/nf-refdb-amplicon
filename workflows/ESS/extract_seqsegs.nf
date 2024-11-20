@@ -13,7 +13,7 @@ include {
     ESS_TABSEQS;
     ESS_TRAIN_CLASSIFIER;
 
-} from '../modules/extract_seqsegs_modules.nf'
+} from '../../modules/ESS/extract_seqsegs_modules.nf'
 
 
 workflow EXTRACT_ITER {
