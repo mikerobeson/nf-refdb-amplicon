@@ -1,6 +1,6 @@
 include { 
     GET_GTDB;
- } from '../modules/SSU/gtdb_modules.nf'
+ } from '../../modules/SSU/gtdb_modules.nf'
 
 include { 
     DEREP as FULL_DEREP_GTDB;
@@ -8,7 +8,7 @@ include {
     AMP_REG_EXTRACT as AMP_REG_EXTRACT_GTDB;
     TRAIN_CLASSIFIER as FULL_TRAIN_GTDB;
     TRAIN_CLASSIFIER as AMP_TRAIN_GTDB;
- } from '../modules/base_modules.nf'
+ } from '../../modules/base_modules.nf'
  
 primer_pair_tuples = Channel.fromList(params.primer_pairs)
 
