@@ -9,22 +9,24 @@ conda create -n nextflow -c conda-forge -c bioconda -c defaults nextflow
 conda activate nextflow
 ```
 
-**Run SSU (16S/18S rRNA gene) pipeline**
+Then change to the nf-refdb-amplicon directory:
 ```
 cd nf-refdb-amplicon
-
-nextflow run ssu.nf
 ```
 
-**Run GenBank "extract sequence segments" (any gene) pipeline**
-*This is currently in alpha development. You'll have to provide files using the `params.segseqs`, `params.seqs`, and `params.taxa` parameters in the config file.*
-```
-cd nf-refdb-amplicon
+### Then sun either the SSU (16S/18S rRNA gene) or the "extract sequence segments" (ess) pipeline:
 
-nextflow run ess.nf
+- Use `-profile local` if running locally, or `-profile cluster` if running on HPC.
+- Then set either `ssu` or `ess` for `params.pipeline_type` parameter within the `nextflow.config` file prior to running one of the pipelines outlined below.
+
+
+```
+nextflow run main.nf -profile <profile>
 ```
 
-*Note: add `-profile cluster` if running on HPC, or `-profile standard` if running locally.*
+*Note: the `ess` pipeline is currently in alpha development. You'll have to provide files using the `params.segseqs`, `params.seqs`, and `params.taxa` parameters in the config file.*
+
+
 
 ## Cite
 If you make use of this pipeline please cite RESCRIPt:
