@@ -41,6 +41,7 @@ process ESS_DEREP {
   
     tag 'Dereplicating data.'
     
+    label 'derep'
     label 'ess_derep'
 
     input:
@@ -74,6 +75,7 @@ process ESS_CULL {
 
     tag 'Culling sequences.'
     
+    label 'cull'
     label 'ess_cull'
     
     input:
@@ -99,6 +101,7 @@ process ESS_TABSEQS {
 
     tag 'Tabulating sequences.'
 
+    label 'tabseqs'
     label 'ess_tabseqs'
 
     input:
@@ -120,6 +123,7 @@ process ESS_TRAIN_CLASSIFIER {
     
     tag 'Train classifier.'
 
+    label 'train_classifier'
     label 'ess_train_classifier'
 
     input:
