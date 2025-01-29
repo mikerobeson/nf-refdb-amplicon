@@ -9,7 +9,20 @@ conda create -n nextflow -c conda-forge -c bioconda -c defaults nextflow
 conda activate nextflow
 ```
 
-Then change to the nf-refdb-amplicon directory:
+**Clone the repo**
+```
+git clone https://github.com/mikerobeson/nf-refdb-amplicon
+```
+*Note: depending on the development cycle you may also need to clone and install the latest repo version of RESCRIPt into your QIIME 2 environment:*
+
+```
+git clone https://github.com/bokulich-lab/RESCRIPt
+cd RESCRIPt
+pip install .
+```
+
+**Run nextflow pipeline**:
+Then change to the `nf-refdb-amplicon` directory:
 ```
 cd nf-refdb-amplicon
 ```
