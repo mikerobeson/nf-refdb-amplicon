@@ -16,6 +16,7 @@ git clone https://github.com/mikerobeson/nf-refdb-amplicon
 *Note: depending on the development cycle you may also need to clone and install the latest repo version of RESCRIPt into your QIIME 2 environment:*
 
 ```
+conda activate qiime2-amplicon-2024.10 # or other recent version
 git clone https://github.com/bokulich-lab/RESCRIPt
 cd RESCRIPt
 pip install .
