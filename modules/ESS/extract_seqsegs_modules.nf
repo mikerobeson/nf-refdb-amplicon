@@ -26,8 +26,8 @@ process ESS_EXTRACTSEQSEGS {
         echo "Running iteration: ${task.index} ..."
 
         qiime rescript extract-seq-segments \
-            --i-input-sequences $seqs \
-            --i-reference-segment-sequences $refsegseqs \
+            --i-input-sequences ${seqs} \
+            --i-reference-segment-sequences ${refsegseqs} \
             --p-perc-identity 0.85 \
             --p-min-seq-len 20 \
             --p-threads ${task.cpus} \
@@ -89,8 +89,8 @@ process ESS_CULL {
         qiime rescript cull-seqs \
             --i-sequences ${seqs}  \
             --p-n-jobs ${task.cpus} \
-            --p-num-degenerates 1 \
-            --p-homopolymer-length 8 \
+            --p-num-degenerates ${params.cull.degen} \
+            --p-homopolymer-length ${params.cull.hpoly} \
             --o-clean-sequences '${db}_${amp_reg}_culled_seqs_${task.index}.qza' \
             --verbose
         """
@@ -113,7 +113,7 @@ process ESS_TABSEQS {
     script:
         """
         qiime feature-table tabulate-seqs \
-          --i-data $seqs \
+          --i-data ${seqs} \
           --o-visualization '${db}_${amp_reg}_culled_seqs_${task.index}.qzv'
         """
 
@@ -138,8 +138,8 @@ process ESS_TRAIN_CLASSIFIER {
     script:
         """
         qiime feature-classifier fit-classifier-naive-bayes \
-            --i-reference-reads '${seqs}' \
-            --i-reference-taxonomy '${taxa}' \
+            --i-reference-reads ${seqs} \
+            --i-reference-taxonomy ${taxa} \
             --o-classifier '${db}_${amp_reg}_classifier_${params.iter}.qza'
         """
 
