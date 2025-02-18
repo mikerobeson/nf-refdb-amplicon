@@ -41,10 +41,10 @@ process AMP_REG_EXTRACT {
 
     input:
         tuple val(db), val(full_amp), path(seqs)
-        tuple val(amp_region), val(fw_primer), val(rev_primer)
+        tuple val(amp_reg), val(fw_primer), val(rev_primer)
     
     output:
-        tuple val(db), val(amp_region), path("${db}_${amp_region}_seqs.qza"), emit: extract_amp
+        tuple val(db), val(amp_reg), path("${db}_${amp_reg}_seqs.qza"), emit: extract_amp
     
     script:
         """
@@ -54,8 +54,33 @@ process AMP_REG_EXTRACT {
             --p-r-primer ${rev_primer} \
             --p-n-jobs ${task.cpus} \
             --p-read-orientation 'forward' \
-            --o-reads '${db}_${amp_region}_seqs.qza'
+            --o-reads '${db}_${amp_reg}_seqs.qza'
         """
+}
+
+process CULL {
+
+    tag 'Culling sequences.'
+    
+    label 'cull'
+    
+    input:
+        tuple val(db), val(amp_reg), path(seqs)
+    
+    output:
+        tuple val(db), val(amp_reg), path("${db}_${amp_reg}_culled_seqs.qza"), emit: culled_seqs
+
+    script:
+        """
+        qiime rescript cull-seqs \
+            --i-sequences ${seqs}  \
+            --p-n-jobs ${task.cpus} \
+            --p-num-degenerates ${params.cull.degen} \
+            --p-homopolymer-length ${params.cull.hpoly} \
+            --o-clean-sequences '${db}_${amp_reg}_culled_seqs.qza' \
+            --verbose
+        """
+
 }
 
 process TRAIN_CLASSIFIER {
@@ -74,8 +99,8 @@ process TRAIN_CLASSIFIER {
     script:
         """
         qiime feature-classifier fit-classifier-naive-bayes \
-            --i-reference-reads '${seqs}' \
-            --i-reference-taxonomy '${taxa}' \
+            --i-reference-reads ${seqs} \
+            --i-reference-taxonomy ${taxa} \
             --o-classifier '${db}_${amp_reg}_classifier.qza'
         """
 
