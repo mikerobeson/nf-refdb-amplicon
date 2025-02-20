@@ -22,7 +22,7 @@ workflow EXTRACT_ITER {
     segseqs
     
   main:
-    ESS_EXTRACTSEQSEGS(params.seqs, segseqs)
+    ESS_EXTRACTSEQSEGS(params.seqs, seqsegs)
     ESS_DEREP(ESS_EXTRACTSEQSEGS.out.matched_extracted_seqs, params.taxa)
     ESS_CULL(ESS_DEREP.out.derep_seqs)
     ESS_TABSEQS(ESS_CULL.out.culled_seqs)
@@ -36,7 +36,7 @@ workflow EXTRACT_ITER {
 workflow RECURSE {
 
     EXTRACT_ITER
-        .recurse(params.segseqs)
+        .recurse(params.seqsegs)
         .times(params.iter)
     
     emit:
