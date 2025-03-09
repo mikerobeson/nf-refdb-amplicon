@@ -19,7 +19,7 @@ include {
 workflow EXTRACT_ITER {
 
   take: 
-    segseqs
+    seqsegs
     
   main:
     ESS_EXTRACTSEQSEGS(params.seqs, seqsegs)
