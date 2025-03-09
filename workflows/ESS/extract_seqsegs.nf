@@ -19,25 +19,32 @@ include {
 workflow EXTRACT_ITER {
 
   take: 
-    segseqs
+    seqsegs
+    id
     
   main:
-    ESS_EXTRACTSEQSEGS(params.seqs, seqsegs)
+    ESS_EXTRACTSEQSEGS(params.seqs, seqsegs, id)
     ESS_DEREP(ESS_EXTRACTSEQSEGS.out.matched_extracted_seqs, params.taxa)
     ESS_CULL(ESS_DEREP.out.derep_seqs)
     ESS_TABSEQS(ESS_CULL.out.culled_seqs)
 
   emit:
     ESS_CULL.out.culled_seqs
+    id
 
 }
 
 
 workflow RECURSE {
 
-    EXTRACT_ITER
-        .recurse(params.seqsegs)
-        .times(params.iter)
+    take:
+        seqsegs
+        id
+
+    main:
+        EXTRACT_ITER
+            .recurse(seqsegs, id)
+            .times(params.iter)
     
     emit:
         EXTRACT_ITER
@@ -47,9 +54,9 @@ workflow RECURSE {
 }
 
 
-workflow MAKE_ESS_CLASSIFIER {
+// workflow MAKE_ESS_CLASSIFIER {
 
-    RECURSE()
-    ESS_TRAIN_CLASSIFIER(RECURSE.out, params.taxa)
+//     RECURSE()
+//     ESS_TRAIN_CLASSIFIER(RECURSE.out, params.taxa)
 
-}
+// }

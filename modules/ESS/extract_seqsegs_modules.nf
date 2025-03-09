@@ -14,6 +14,7 @@ process ESS_EXTRACTSEQSEGS {
     input:
         tuple val(db), val(amp_reg), path(seqs)
         tuple val(db), val(amp_seg), path(refseqsegs)
+        val(id)
         // tuple val(amp_region), val(fw_primer), val(rev_primer)
         // change amp_reg to amp_seg for output?
 
@@ -28,7 +29,7 @@ process ESS_EXTRACTSEQSEGS {
         qiime rescript extract-seq-segments \
             --i-input-sequences ${seqs} \
             --i-reference-segment-sequences ${refseqsegs} \
-            --p-perc-identity 0.85 \
+            --p-perc-identity ${id} \
             --p-min-seq-len 20 \
             --p-threads ${task.cpus} \
             --o-extracted-sequence-segments '${db}_${amp_seg}_matched_extseqsegs_seqs_${task.index}.qza' \
