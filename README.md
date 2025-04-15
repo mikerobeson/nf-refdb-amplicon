@@ -58,4 +58,4 @@ Please be sure to cite the following as well:
 
 ---
 
-*Note: a Snakemake variant of this pipeline is available [here](https://github.com/mikerobeson/snake-ref-amplicon-pipe).*
+*Note: an older Snakemake variant of this pipeline is available [here](https://github.com/mikerobeson/snake-ref-amplicon-pipe).*
