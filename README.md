@@ -11,8 +11,8 @@ Nextflow pipeline for generating reference databases for amplicon sequences.
 ---
 ## Pipeline Overview
 <p align="center">
-    <a href="docs/img/pipeline.svg">
-        <img src="docs/img/pipeline.svg" alt="Pipeline overview" style="max-width:100%;height:auto;">
+    <a href="docs/img/metro_map.svg">
+        <img src="docs/img/metro_map.svg" alt="Pipeline overview" style="max-width:100%;height:auto;">
     </a>
 </p>
 

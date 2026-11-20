@@ -43,6 +43,7 @@ process ESS_EXTRACT_READS {
         --p-n-jobs ${task.cpus} \
         --p-read-orientation 'both' \
         --o-reads initial_seq_segments.qza \
+        --o-read-extraction-stats initial_seq_segments_stats.qza \
         \$STATS_FLAG \
         --verbose
 

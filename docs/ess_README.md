@@ -25,6 +25,9 @@ The **ESS (Extract Sequence Segments) workflow** automates the iterative referen
     - [UNITE](#unite-1)
     - [MIDORI2](#midori2-1)
     - [PR2 (Protist Ribosomal Reference)](#pr2-protist-ribosomal-reference)
+    - [SILVA](#silva)
+    - [GTDB (Genome Taxonomy Database)](#gtdb-genome-taxonomy-database)
+    - [RDP (Ribosomal Database Project)](#rdp-ribosomal-database-project)
   - [Output](#output)
   - [Cite](#cite)
 
@@ -209,7 +212,7 @@ nextflow run main.nf \
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `--ess.source` | `custom` | Data source. Options: `custom`, `ncbi`, `unite`, `midori2`, `pr2` |
+| `--ess.source` | `custom` | Data source. Options: `custom`, `ncbi`, `unite`, `midori2`, `pr2`, `silva`, `gtdb`, `rdp` |
 
 
 ### Custom Input
@@ -245,8 +248,7 @@ When `--ess.source` is *NOT* `custom` and `--ess.seqsegs` is *NOT* provided, the
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `--ess.max_iter` | `2` | Maximum number of iterations |
-| `--ess.perc_identity` | `0.7` | Percent identity for segment extraction |
+| `--ess.iteration_schedule` | `[[0.7, 2]]` | (perc_identity, n_iters) pairs run in order, each stage seeding the next, e.g. "[(0.7, 2), (0.8, 2), (0.9, 1)]" or "0.7:2,0.8:2,0.9:1" |
 | `--ess.min_seq_len` | `10` | Minimum sequence length |
 | `--ess.max_seq_len` | `50000` | Maximum sequence segment length |
 | `--ess.train_classifier` | `true` | Train classifier from output |
@@ -262,12 +264,17 @@ When `--ess.source` is `ncbi`
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `--ess.ncbi_query` | — | NCBI Entrez query string — **required** |
+| `--ncbi_query` | — | NCBI Entrez query string — **required** |
+| `--ncbi.ranks` | `kingdom phylum class order family genus species` | List of taxonomic ranks for building NCBI taxonomy |
+| `--ncbi.rank_propagation` | `true` | Enable rank propagation |
 
 The query follows standard NCBI Entrez syntax. Example:
 ```bash
 --ess.ncbi_query "txid35493[ORGN] AND (trnL OR tRNA-Leu) AND (chloroplast[Filter] OR plastid[Filter]) NOT environmental sample[Filter] NOT uncultured[Title]"
 ```
+
+> [!TIP]
+> Run `qiime rescript get-ncbi-data --help` for more info.
 
 
 ### UNITE
@@ -275,10 +282,13 @@ When `--ess.source` is `unite`
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `--ess.unite_version` | `2025-02-19` | UNITE version |
-| `--ess.unite_taxon_group` | `eukaryotes` | Taxon group: `fungi` or `eukaryotes` |
-| `--ess.unite_cluster_id` | `dynamic` | Cluster ID threshold: `99`, `97`, or `dynamic` |
-| `--ess.unite_singletons` | `false` | Include singletons |
+| `--unite.version` | `2025-02-19` | UNITE version |
+| `--unite.taxon_group` | `eukaryotes` | Taxon group: `fungi` or `eukaryotes` |
+| `--unite.cluster_id` | `dynamic` | Cluster ID threshold: `99`, `97`, or `dynamic` |
+| `--unite.singletons` | `false` | Include singletons |
+
+> [!TIP]
+> Run `qiime rescript get-unite-data --help` for more info.
 
 
 ### MIDORI2
@@ -298,10 +308,49 @@ When `--ess.source` is `pr2`
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `--ess.pr2_version` | latest | PR2 version (e.g., `5.1.0`) |
+| `--pr2.version` | `5.1.1` | PR2 version (e.g., `5.1.1`) |
+| `--pr2.ranks`   | `domain supergroup division subdivision class order family genus species` | List of taxonomic ranks for building PR2 taxonomy database |
 
 > [!TIP]
-> Run `qiime rescript get-pr2-data --help` for available versions.
+> Run `qiime rescript get-pr2-data --help` for more info.
+
+
+### SILVA
+When `--ess.source` is `silva`
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `silva.version` | `144` | SILVA version |
+| `silva.target`  | `SSURef_N99` | SILVA target |
+| `silva.ranks`   | `domain phylum class order family genus` | Taxonomy ranks |
+| `silva.rank_propagation` | `true` | Enable rank propagation |
+| `silva.download_sequences` | `unaligned` | Download type |
+
+> [!TIP]
+> Run `qiime rescript get-silva-data --help` for more info.
+
+
+### GTDB (Genome Taxonomy Database)
+When `--ess.source` is `gtdb`
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `--gtdb.version` | `220.0` | GTDB version |
+| `--gtdb.domain`  | `Both`  | Domain |
+| `--gtdb.dbtype`  | `SpeciesReps` | DB type |
+
+> [!TIP]
+> Run `qiime rescript get-silva-data --help` for more info.
+
+
+### RDP (Ribosomal Database Project)
+When `--ess.source` is `rdp`
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `--rdp.version` | `19` | RDP training set version |
+| `--rdp.dirname` | `RDPClassifier_16S_trainsetNo19_QiimeFormat` | RDP directory name |
+| `--rdp.url` | See SourceForge | Download URL link |
 
 
 ---
@@ -346,3 +395,6 @@ Please be sure to cite the following:
 - **If using MIDORI2 data** : See the [MIDORI2 website](https://www.reference-midori.info/) for more details. **Cite:** Leray, M., Knowlton, N., & Machida, R. J. (2022). MIDORI2: A collection of quality controlled, preformatted, and regularly updated reference databases for taxonomic assignment of eukaryotic mitochondrial sequences. *Environmental DNA*, 4(4), 894–907. doi: [10.1002/edn3.303](https://doi.org/10.1002/edn3.303).
 - **If using UNITE data** : Licensed under CC BY-SA 4.0. See [UNITE citation page](https://unite.ut.ee/cite.php) for more details. **Cite:** Abarenkov, K., Nilsson, R. H., Larsson, K.-H., Taylor, A. F. S., May, T. W., Frøslev, T. G., *et al*. (2024). The UNITE database for molecular identification and taxonomic communication of fungi and other eukaryotes: sequences, taxa and classifications reconsidered. *Nucleic Acids Research*. doi: [10.1093/nar/gkad1039](https://doi.org/10.1093/nar/gkad1039).
 - **If using PR2 data** : See the [PR2 database](https://pr2-database.org/) for more details. **Cite:** Guillou, L., Bachar, D., Audic, S., Bass, D., Berney, C., Bittner, L., *et al*. (2013). The Protist Ribosomal Reference database (PR2): a catalog of unicellular eukaryote Small Sub-Unit rRNA sequences with curated taxonomy. *Nucleic Acids Research*, 41(D1), D597–D604. doi: [10.1093/nar/gks1160](https://doi.org/10.1093/nar/gks1160).
+- **If using the SILVA data** : Versions are released under different licenses. Refer to the [current SILVA release license information](https://www.arb-silva.de/silva-license-information/) for more details. [How to cite SILVA](https://www.arb-silva.de/contact/).
+- **If using GTDB data** : See the [GTDB "about" page](https://gtdb.ecogenomic.org/about) for more details. [How to cite GTDB](https://gtdb.ecogenomic.org/about).
+- **If using RDP data** : See the [main RDP GitHub page](https://github.com/rdpstaff) and the [RDP sourceforge page](https://sourceforge.net/projects/rdp-classifier/files/RDP_Classifier_TrainingData/) for more details. Please cite the following RDP aritcles: [Wang *et al*. 2007](http://dx.doi.org/10.1128/AEM.00062-07) & [Wang *et al*. 2024](https://doi.org/10.1128/mra.01063-23).
