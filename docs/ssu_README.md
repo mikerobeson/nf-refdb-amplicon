@@ -76,8 +76,8 @@ Building all three databases with both full-length and amplicon classifiers, usi
 ```bash
 nextflow run main.nf \
     --pipeline_type ssu \
-    --ssu_databases 'silva,rdp,gtdb' \
-    --qiime_conda_env /path/to/rachis-qiime2-2026.4 \
+    --ssu.databases 'silva,rdp,gtdb' \
+    --qiime_conda_env /path/to/rachis-qiime2-2026.10 \
     -profile local,conda
 ```
 
@@ -87,7 +87,7 @@ Pass a comma-separated list. Quote it so the shell does not split on the comma:
 ```bash
 nextflow run main.nf \
     --pipeline_type ssu \
-    --ssu_databases 'rdp,gtdb' \
+    --ssu.databases 'rdp,gtdb' \
     -profile local,conda
 ```
 
@@ -110,7 +110,7 @@ nextflow run main.nf \
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `--ssu_databases` | `silva,gtdb,rdp` | Databases to build. Options: `silva`, `gtdb`, `rdp` |
+| `--ssu.databases` | `silva,gtdb,rdp` | Databases to build. Options: `silva`, `gtdb`, `rdp` |
 
 
 ### Classifier options

@@ -297,7 +297,7 @@ When `--ess.source` is `midori2`
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `--ess.midori2_target_gene` | `COI` | Target mitochondrial gene |
-| `--ess.midori2_version` | latest | MIDORI2 version |
+| `--ess.midori2_version` | `273` | MIDORI2 version |
 
 > [!TIP]
 > Run `qiime rescript get-midori2-data --help` for the full list of target genes.

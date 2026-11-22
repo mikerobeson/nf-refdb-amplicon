@@ -73,10 +73,10 @@ workflow {
                 nextflow run main.nf --pipeline_type ssu [options] -profile <local,conda | cluster,conda>
 
             SSU Parameters:
-                --ssu.databases             Databases to build (comma-separated) [default: silva,rdp,gtdb]
+                --ssu.databases             Databases to build (comma-separated) [default: ${params.ssu.databases}]
                                             Available: silva, rdp, gtdb
-                --build_full_classifier     Build full-length classifier [default: true]
-                --build_amplicon_classifier Build amplicon classifier [default: true]
+                --build_full_classifier     Build full-length classifier [default: ${params.build_full_classifier}]
+                --build_amplicon_classifier Build amplicon classifier [default: ${params.build_amplicon_classifier}]
 
             Primer Pairs:
                 --primer_pairs              List of primer pairs for amplicon region extraction [default: null]
