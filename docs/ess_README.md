@@ -295,8 +295,8 @@ When `--ess.source` is `unite`
 When `--ess.source` is `midori2`
 
 > [!NOTE]
-> We are still in the process of upgrading the current MIDORI2 module to the latest RESCRIPt parameters. 
-> Please note that some features may not work and may produce errors when run.
+> MIDORI2 remains available as a reference database source within the ESS workflow. However, recent changes to `qiime rescript get-midori2-data` no longer support downloading individual mitochondrial marker genes directly. Instead, the full MIDORI2 mitochondrial reference dataset must be downloaded and processed before sequences for a specific target gene can be extracted. 
+> This may substantially increase runtime and storage requirements. Users who only need a specific marker gene may find it more efficient to generate a gene-specific MIDORI2 reference dataabse outside the workflow and provide it as a custom reference database.
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
