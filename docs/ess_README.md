@@ -294,6 +294,10 @@ When `--ess.source` is `unite`
 ### MIDORI2
 When `--ess.source` is `midori2`
 
+> [!NOTE]
+> We are still in the process of upgrading the current MIDORI2 module to the latest RESCRIPt parameters. 
+> Please note that some features may not work and may produce errors when run.
+
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `--ess.midori2_target_gene` | `COI` | Target mitochondrial gene |
