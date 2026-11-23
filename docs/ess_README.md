@@ -92,8 +92,8 @@ nextflow run main.nf \
     --ess.seqsegs data/test_trnL_seeds.qza \
     --ess.db trnL \
     --ess.amp_seg trnLgh \
-    --ess.max_iter 2 \
-    --qiime_conda_env /path/to/rachis-qiime2-2026.4 \
+    --ess.iteration_schedule "[(0.7, 2)]" \
+    --qiime_conda_env /path/to/rachis-qiime2-2026.10 \
     -profile local,conda
 ```
 > [!WARNING]
@@ -116,9 +116,9 @@ nextflow run main.nf \
     --ess.rev_primer GGACTACNVGGGTWTCTAAT \
     --ess.extract_min_length 10 \
     --ess.extract_max_length 600 \
-    --ess.max_iter 1 \
+    --ess.iteration_schedule "[(0.7, 1)]" \
     --ess.train_classifier false \
-    --qiime_conda_env /path/to/rachis-qiime2-2026.4 \
+    --qiime_conda_env /path/to/rachis-qiime2-2026.10 \
     -profile local,conda
 ```
 
@@ -142,9 +142,9 @@ nextflow run main.nf \
     --ess.rev_primer GCTGCGTTCTTCATCGATGC \
     --ess.extract_min_length 10 \
     --ess.extract_max_length 600 \
-    --ess.max_iter 2 \
+    --ess.iteration_schedule "[(0.7, 2)]" \
     --ess.train_classifier true \
-    --qiime_conda_env /path/to/rachis-qiime2-2026.4 \
+    --qiime_conda_env /path/to/rachis-qiime2-2026.10 \
     -profile local,conda
 ```
 
@@ -160,6 +160,10 @@ In the above usage, the primers shown are ITS1F / ITS2.
 
 Mitochondrial marker genes. Gene identifiers follow MIDORI2's internal codes — `srRNA`
 for 12S, `lrRNA` for 16S, `CO1` for COI.
+
+> [!NOTE]
+> MIDORI2 remains available as a reference database source within the ESS workflow. However, recent changes to `qiime rescript get-midori2-data` in the version `2026.10` no longer support downloading individual mitochondrial marker genes directly. Instead, the full MIDORI2 mitochondrial reference dataset must be downloaded and processed before sequences for a specific target gene can be extracted. 
+> This may substantially increase runtime and storage requirements. Users who only need a specific marker gene may find it more efficient to generate a gene-specific MIDORI2 reference dataabse outside the workflow and provide it as a custom reference database.
 
 ```bash
 nextflow run main.nf \
@@ -195,9 +199,9 @@ nextflow run main.nf \
     --ess.rev_primer GGACTACNVGGGTWTCTAAT \
     --ess.extract_min_length 10 \
     --ess.extract_max_length 600 \
-    --ess.max_iter 1 \
+    --ess.iteration_schedule "[(0.7, 1)]" \
     --ess.train_classifier false \
-    --qiime_conda_env /path/to/rachis-qiime2-2026.4 \
+    --qiime_conda_env /path/to/rachis-qiime2-2026.10 \
     -profile local,conda
 ```
 
@@ -293,10 +297,6 @@ When `--ess.source` is `unite`
 
 ### MIDORI2
 When `--ess.source` is `midori2`
-
-> [!NOTE]
-> MIDORI2 remains available as a reference database source within the ESS workflow. However, recent changes to `qiime rescript get-midori2-data` no longer support downloading individual mitochondrial marker genes directly. Instead, the full MIDORI2 mitochondrial reference dataset must be downloaded and processed before sequences for a specific target gene can be extracted. 
-> This may substantially increase runtime and storage requirements. Users who only need a specific marker gene may find it more efficient to generate a gene-specific MIDORI2 reference dataabse outside the workflow and provide it as a custom reference database.
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
