@@ -42,7 +42,7 @@ workflow SSU {
     // SILVA
     // ==========================================================
 
-    if (params.ssu_databases.toString().contains('silva')) {
+    if (params.ssu.databases.toString().contains('silva')) {
         GET_SILVA()
         CURATE_AND_TRAIN_SILVA(
             GET_SILVA.out.silva_seqs,
@@ -55,7 +55,7 @@ workflow SSU {
     // GTDB
     // ==========================================================
 
-    if (params.ssu_databases.toString().contains('gtdb')) {
+    if (params.ssu.databases.toString().contains('gtdb')) {
         GET_GTDB()
         CURATE_AND_TRAIN_GTDB(
             GET_GTDB.out.gtdb_seqs,
@@ -68,7 +68,7 @@ workflow SSU {
     // RDP
     // ==========================================================
 
-    if (params.ssu_databases.toString().contains('rdp')) {
+    if (params.ssu.databases.toString().contains('rdp')) {
         GET_RDP()
         IMPORT_RDP(GET_RDP.out.rdp_fasta, GET_RDP.out.rdp_tax_tsv)
         CURATE_AND_TRAIN_RDP(

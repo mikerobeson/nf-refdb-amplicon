@@ -11,8 +11,8 @@ Nextflow pipeline for generating reference databases for amplicon sequences.
 ---
 ## Pipeline Overview
 <p align="center">
-    <a href="docs/img/pipeline.svg">
-        <img src="docs/img/pipeline.svg" alt="Pipeline overview" style="max-width:100%;height:auto;">
+    <a href="docs/img/metro_map.svg">
+        <img src="docs/img/metro_map.svg" alt="Pipeline overview" style="max-width:100%;height:auto;">
     </a>
 </p>
 
@@ -186,3 +186,7 @@ If you make use of this pipeline please cite RESCRIPt:
 
 > [!NOTE] 
 > An older Snakemake variant of this pipeline is available [here](https://github.com/mikerobeson/snake-ref-amplicon-pipe).
+
+---
+## A note on AI
+AI tools, including Anthropic's Claude models, were used to assist with the development and structuring part of the code in this repository. All generated code and outputs were reviewed and validated by a human contributor before being committed.

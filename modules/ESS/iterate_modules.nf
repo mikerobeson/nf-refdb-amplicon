@@ -55,6 +55,7 @@ process ESS_ITERATE {
     input:
     path state_json
     val limiter
+    val perc_identity_schedule   // comma-separated string, one perc-identity per iteration, e.g. '0.7,0.7,0.8,0.8,0.9'
 
     output:
     path "state.json", topic: 'ess_iteration'
@@ -81,11 +82,17 @@ process ESS_ITERATE {
     db = '${params.ess.db}'
     amp_seg = '${params.ess.amp_seg}'
 
+    # Per-iteration percent identity (schedule is expanded to one value per iteration)
+    perc_schedule = '${perc_identity_schedule}'.split(',')
+    if step > len(perc_schedule):
+        sys.exit(f'ERROR: iteration {step} exceeds length of perc-identity schedule ({len(perc_schedule)})')
+    perc_identity = perc_schedule[step - 1].strip()
+
     # Create iteration subdirectory
     iter_dir = f'iter_{step}'
     os.makedirs(iter_dir, exist_ok=True)
 
-    print(f"=== ESS Iteration {step} ===", flush=True)
+    print(f"=== ESS Iteration {step} (perc-identity {perc_identity}) ===", flush=True)
 
     # Step 1: Extract sequence segments
     print("Step 1: Extracting sequence segments...", flush=True)
@@ -93,7 +100,7 @@ process ESS_ITERATE {
         'qiime', 'rescript', 'extract-seq-segments',
         '--i-input-sequences', ref_seqs,
         '--i-reference-segment-sequences', seqsegs_path,
-        '--p-perc-identity', '${params.ess.perc_identity}',
+        '--p-perc-identity', perc_identity,
         '--p-min-seq-len', '${params.ess.min_seq_len}',
         '--p-max-seq-len', '${params.ess.max_seq_len}',
         '--p-threads', '${task.cpus}',
@@ -131,7 +138,8 @@ process ESS_ITERATE {
         'step': step,
         'seqsegs_path': os.path.abspath(f'{iter_dir}/{db}_{amp_seg}_culled_seqs.qza'),
         'ref_seqs': ref_seqs,
-        'ref_taxa': ref_taxa
+        'ref_taxa': ref_taxa,
+        'perc_identity': perc_identity
     }
 
     print(f"Iteration {step} complete.", flush=True)

@@ -5,7 +5,7 @@
     nf-refdb-amplicon
 ========================================================================================
     Nextflow pipeline for generating reference databases for amplicon sequences.
-    
+
     GitHub : https://github.com/mikerobeson/nf-refdb-amplicon
     Website: https://github.com/bokulich-lab/RESCRIPt
 ----------------------------------------------------------------------------------------
@@ -35,12 +35,12 @@ workflow {
     log.info """
     ===================================================================
 
-    ███╗  ██╗███████╗    ██████╗ ███████╗███████╗██████╗ ██████╗ 
+    ███╗  ██╗███████╗    ██████╗ ███████╗███████╗██████╗ ██████╗
     ████╗ ██║██╔════╝    ██╔══██╗██╔════╝██╔════╝██╔══██╗██╔══██╗
     ██╔██╗██║█████╗  ─── ██████╔╝█████╗  █████╗  ██║  ██║██████╔╝
     ██║╚████║██╔══╝      ██╔══██╗██╔══╝  ██╔══╝  ██║  ██║██╔══██╗
     ██║ ╚███║██║         ██║  ██║███████╗██║     ██████╔╝██████╔╝
-    ╚═╝  ╚══╝╚═╝         ╚═╝  ╚═╝╚══════╝╚═╝     ╚═════╝ ╚═════╝ 
+    ╚═╝  ╚══╝╚═╝         ╚═╝  ╚═╝╚══════╝╚═╝     ╚═════╝ ╚═════╝
      █████╗ ███╗   ███╗██████╗ ██╗     ██╗ ██████╗  ██████╗ ███╗  ██╗
     ██╔══██╗████╗ ████║██╔══██╗██║     ██║██╔════╝ ██╔═══██╗████╗ ██║
     ███████║██╔████╔██║██████╔╝██║     ██║██║      ██║   ██║██╔██╗██║
@@ -59,7 +59,7 @@ workflow {
     // Help messages
     if (params.help) {
 
-                // --help ssu
+        // --help ssu
         if (params.help == 'ssu') {
             log.info """
             ===================================================================
@@ -70,13 +70,13 @@ workflow {
             ribosomal RNA (16S/18S) from supported public repositories.
 
             Usage:
-                nextflow run main.nf --pipeline_type ssu [options] -profile <local,docker|local,conda>
+                nextflow run main.nf --pipeline_type ssu [options] -profile <local,conda | cluster,conda>
 
             SSU Parameters:
-                --ssu_databases             Databases to build (comma-separated) [default: silva,rdp,gtdb]
+                --ssu.databases             Databases to build (comma-separated) [default: ${params.ssu.databases}]
                                             Available: silva, rdp, gtdb
-                --build_full_classifier     Build full-length classifier [default: true]
-                --build_amplicon_classifier Build amplicon classifier [default: true]
+                --build_full_classifier     Build full-length classifier [default: ${params.build_full_classifier}]
+                --build_amplicon_classifier Build amplicon classifier [default: ${params.build_amplicon_classifier}]
 
             Primer Pairs:
                 --primer_pairs              List of primer pairs for amplicon region extraction [default: null]
@@ -99,26 +99,43 @@ workflow {
                                               515F944R  : GTGCCAGCMGCCGCGGTAA  / GAATTAAACCACATGCTC
                                               939F1378R : GAATTGACGGGGGCCCGCACAAG / CGGTGTGTACAAGGCCCGGGAACG
 
+            SILVA Parameters:
+               --silva.version              SILVA version [default: ${params.silva?.version ?: '144'}]
+               --silva.target               SILVA target [default: ${params.silva?.target ?: 'SSURef_NR99'}]
+               --silva.ranks                Taxonomy ranks [default: ${params.silva?.ranks ?: 'domain phylum class order family genus'}]
+               --silva.rank_propagation     Enable rank propagation [default: ${params.silva?.rank_propagation ?: true}]
+               --silva.download_sequences   Download type [default: ${params.silva?.download_sequences ?: 'unaligned'}]
+
+            GTDB Parameters:
+               --gtdb.version          GTDB version [default: ${params.gtdb?.version ?: '232.0'}]
+               --gtdb.domain           Domain [default: ${params.gtdb?.domain ?: 'Both'}]
+               --gtdb.dbtype           DB type [default: ${params.gtdb?.dbtype ?: 'SpeciesReps'}]
+
+            RDP Parameters:
+                --rdp.version           RDP training set version [default: ${params.rdp?.version ?: '19'}]
+                --rdp.dirname           RDP directory name [default: ${params.rdp?.dirname ?: 'N/A'}]
+                --rdp.url               Download URL [default: SourceForge]
+
             Examples:
                 # Build RDP and GTDB only, no classifiers:
                 nextflow run main.nf --pipeline_type ssu \\
-                    --ssu_databases 'rdp,gtdb' \\
+                    --ssu.databases 'rdp,gtdb' \\
                     --build_full_classifier false \\
                     --build_amplicon_classifier false \\
                     -profile local,conda
 
                 # Build all databases with default amplicon classifier (515F806R):
                 nextflow run main.nf --pipeline_type ssu \\
-                    --ssu_databases 'silva,rdp,gtdb' \\
+                    --ssu.databases 'silva,rdp,gtdb' \\
                     -profile local,conda
 
                 # To change primer pairs, edit conf/ssu.config directly
             ===================================================================
             """.stripIndent()
-            return
+        exit 0
         }
 
-                // --help ess
+        // --help ess
         if (params.help == 'ess') {
             log.info """
             ===================================================================
@@ -130,11 +147,11 @@ workflow {
             downloading from public databases via RESCRIPt.
 
             Usage:
-                nextflow run main.nf --pipeline_type ess [options] -profile <local,conda|cluster,conda>
+                nextflow run main.nf --pipeline_type ess [options] -profile <local,conda | cluster,conda>
 
             Data Source:
                 --ess.source                Data source [default: ${params.ess.source}]
-                                            Options: custom, ncbi, unite, midori2, pr2
+                                            Options: custom, ncbi, unite, midori2, pr2, silva, gtdb, rdp
 
             Custom Input (when --ess.source custom):
                 --ess.seqs                  Path to sequences (.qza) [required]
@@ -155,29 +172,49 @@ workflow {
                 --ess.amp_seg               Amplicon segment name [default: ${params.ess.amp_seg}]
 
             ESS Iteration Parameters:
-                --ess.max_iter              Max iterations [default: ${params.ess.max_iter}]
-                --ess.perc_identity         Percent identity for segment extraction [default: ${params.ess.perc_identity}]
+                --ess.iteration_schedule    (perc_identity, n_iters) pairs run in order, each stage seeding the next, e.g.
+                                            "[(0.7, 2), (0.8, 2), (0.9, 1)]" or "0.7:2,0.8:2,0.9:1" [default: ${params.ess.iteration_schedule}]
                 --ess.min_seq_len           Minimum sequence length [default: ${params.ess.min_seq_len}]
                 --ess.max_seq_len           Maximum sequence segment length [default: ${params.ess.max_seq_len}]
                 --ess.train_classifier      Train classifier from output [default: ${params.ess.train_classifier}]
 
             NCBI Parameters (when --ess.source ncbi):
-                --ess.ncbi_query            NCBI Entrez query string [required]
+                --ncbi.query                 NCBI Entrez query string [default: '']
+                --ncbi.ranks                 List of taxonomic ranks for building NCBI taxonomy [default: ${params.ncbi?.ranks ?: 'kingdom phylum class order family genus species'}]
+                --ncbi.rank_propagation      Enable rank propagation [default: ${params.ncbi?.rank_propagation ?: true}]
 
             UNITE Parameters (when --ess.source unite):
-                --ess.unite_version         UNITE version [default: ${params.ess.unite_version}]
-                --ess.unite_taxon_group     Taxon group: fungi, eukaryotes [default: ${params.ess.unite_taxon_group}]
-                --ess.unite_cluster_id      Cluster ID threshold [default: ${params.ess.unite_cluster_id}]
-                --ess.unite_singletons      Include singletons [default: ${params.ess.unite_singletons}]
+                --unite.version         UNITE version [default: ${params.unite?.version ?: '2025-02-19'}]
+                --unite.taxon_group     Taxon group: fungi, eukaryotes [default: ${params.unite?.taxon_group ?: 'eukaryotes'}]
+                --unite.cluster_id      Cluster ID threshold [default: ${params.unite?.cluster_id ?: '99'}]
+                --unite.singletons      Include singletons [default: ${params.unite?.singletons ?: false}]
 
             MIDORI2 Parameters (when --ess.source midori2):
                 --ess.midori2_target_gene   Target gene (COI, 12S, 16S, etc.) [default: ${params.ess.midori2_target_gene}]
                 --ess.midori2_version       MIDORI2 version [default: ${params.ess.midori2_version ?: 'latest'}]
 
             PR2 Parameters (when --ess.source pr2):
-                --ess.pr2_version           PR2 version [default: ${params.ess.pr2_version ?: 'latest'}]
+                --pr2.version           PR2 version [default: ${params.pr2?.version ?: '5.1.1'}]
+                --pr2.ranks             List of taxonomic ranks for building PR2 taxonomy database [default: ${params.pr2?.ranks ?: 'domain supergroup division subdivision class order family genus species'}]
+            
+            SILVA Parameters (when --ess.source silva):
+               --silva.version              SILVA version [default: ${params.silva?.version ?: '144'}]
+               --silva.target               SILVA target [default: ${params.silva?.target ?: 'SSURef_NR99'}]
+               --silva.ranks                Taxonomy ranks [default: ${params.silva?.ranks ?: 'domain phylum class order family genus'}]
+               --silva.rank_propagation     Enable rank propagation [default: ${params.silva?.rank_propagation ?: true}]
+               --silva.download_sequences   Download type [default: ${params.silva?.download_sequences ?: 'unaligned'}]
+            
+            GTDB Parameters (when --ess.source gtdb):
+               --gtdb.version          GTDB version [default: ${params.gtdb?.version ?: '232.0'}]
+               --gtdb.domain           Domain [default: ${params.gtdb?.domain ?: 'Both'}]
+               --gtdb.dbtype           DB type [default: ${params.gtdb?.dbtype ?: 'SpeciesReps'}]
+            
+            RDP Parameters (when --ess.source rdp):
+                --rdp.version           RDP training set version [default: ${params.rdp?.version ?: '19'}]
+                --rdp.dirname           RDP directory name [default: ${params.rdp?.dirname ?: 'N/A'}]
+                --rdp.url               Download URL [default: SourceForge]
 
-            Usage:
+            Examples:
                 # Run ESS pipeline with custom input files:
                     nextflow run main.nf --pipeline_type ess \\
                         --ess.source custom \\
@@ -186,24 +223,51 @@ workflow {
                         --ess.seqsegs data/test_trnL_seeds.qza \\
                         --ess.db trnL \\
                         --ess.amp_seg trnLgh \\
-                        --ess.max_iter 2 \\
-                        --qiime_conda_env /path/to/rachis-qiime2-2026.4 \\
+                        --ess.iteration_schedule "[(0.7, 2)]" \\
+                        --qiime_conda_env /path/to/rachis-qiime2-2026.10 \\
                         -profile local,conda
 
                 # Run ESS pipeline with NCBI source and primer-based segment extraction:
                     nextflow run main.nf --pipeline_type ess \\
                         --ess.source ncbi \\
-                        --ess.ncbi_query 'trnL[Gene] AND Viridiplantae[Organism]' \\
+                        --ncbi.query 'trnL[Gene] AND Viridiplantae[Organism]' \\
                         --ess.fwd_primer 'GGGCAATCCTGAGCCAA' \\
                         --ess.rev_primer 'CCATTGAGTCTCTGCACCTATC' \\
                         --ess.db trnL \\
                         --ess.amp_seg trnLgh \\
-                        --ess.max_iter 2 \\
-                        --qiime_conda_env /path/to/rachis-qiime2-2026.4 \\
+                        --ess.iteration_schedule "[(0.7, 2)]" \\
+                        --qiime_conda_env /path/to/rachis-qiime2-2026.10 \\
+                        -profile local,conda
+
+                # Run ESS pipeline with UNITE as source:
+                    nextflow run main.nf --pipeline_type ess \\
+                        --ess.source unite \\
+                        --unite.version '2025-02-19' \\
+                        --unite.taxon_group fungi \\
+                        --unite.cluster_id dynamic \\
+                        --unite.singletons false \\
+                        --ess.fwd_primer CTTGGTCATTTAGAGGAAGTAA \\
+                        --ess.rev_primer GCTGCGTTCTTCATCGATGC \\
+                        --ess.extract_min_length 10 \\
+                        --ess.extract_max_length 600 \\
+                        --ess.iteration_schedule "[(0.7, 2)]" \\
+                        --ess.train_classifier true \\
+                        --qiime_conda_env /path/to/rachis-qiime2-2026.10 \\
+                        -profile local,conda
+                
+                # Run ESS pipeline with SILVA as source:
+                    nextflow run main.nf --pipeline_type ess \\
+                        --ess.source silva \\
+                        --ess.fwd_primer GTGYCAGCMGCCGCGGTAA \\
+                        --ess.rev_primer GGACTACNVGGGTWTCTAAT \\
+                        --ess.db silva \\
+                        --ess.amp_seg 515F806R \\
+                        --ess.iteration_schedule "[(0.7, 2), (0.8, 1)]" \\
+                        --qiime_conda_env /path/to/rachis-qiime2-2026.10 \\
                         -profile local,conda
             ===================================================================
             """.stripIndent()
-            return
+        exit 0
         }
 
         // --help (general)
@@ -215,7 +279,7 @@ workflow {
         ===================================================================
 
         Usage:
-            nextflow run main.nf --pipeline_type <ssu|ess> -profile <local,docker|local,conda|cluster,conda>
+            nextflow run main.nf --pipeline_type <ssu|ess> -profile <local,conda|cluster,conda>
 
         Required:
             --pipeline_type         Pipeline to run: 'ssu' or 'ess'
@@ -250,14 +314,14 @@ workflow {
             -resume                 Resume previous run from cache
 
         Examples:
-            nextflow run main.nf --pipeline_type ssu -profile local,docker
-            nextflow run main.nf --pipeline_type ess -profile local,docker
+            nextflow run main.nf --pipeline_type ssu -profile local,conda
+            nextflow run main.nf --pipeline_type ess -profile cluster,conda
 
         Documentation:
             https://github.com/mikerobeson/nf-refdb-amplicon
         ===================================================================
         """.stripIndent()
-        return
+    exit 0
     }
 
     // Validate pipeline type parameter
@@ -266,10 +330,10 @@ workflow {
             ==========================================================
             ERROR: --pipeline_type is required.
             Valid options: "ssu" or "ess"
-            
+
             Usage:
-              nextflow run main.nf --pipeline_type ssu -profile local,docker
-              nextflow run main.nf --pipeline_type ess -profile local,docker
+              nextflow run main.nf --pipeline_type ssu -profile local,conda
+              nextflow run main.nf --pipeline_type ess -profile local,conda
 
             For help:
               nextflow run main.nf --help

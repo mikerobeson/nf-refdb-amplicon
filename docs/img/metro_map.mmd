@@ -1,6 +1,11 @@
 %%metro title: nf-refdb-amplicon
+%%metro track_gap: 3
+%%metro compact_offsets: true
+%%metro fold_threshold: 1
+%%metro line_order: span
+%%metro line_spread: centered
 %%metro mode: dark
-%%metro style: nfcore
+%%metro style: seqera
 %%metro line: rdp | SSU: RDP | #f5c542
 %%metro line: silva | SSU: SILVA | #0570b0
 %%metro line: gtdb | SSU: GTDB | #2db572
@@ -12,8 +17,6 @@
 %%metro files: custom_in | QZA | | banner
 %%metro files: ssu_out | QZA | | banner
 %%metro files: ess_out | QZA | | banner
-%%metro line_order: span
-%%metro compact_offsets: true
 %%metro grid: ssu_acquire | 0,0
 %%metro grid: ssu_curate | 1,0
 %%metro grid: ssu_train | 2,0
@@ -56,19 +59,24 @@ subgraph ssu_train [SSU: Train]
 end
 
 subgraph ess_acquire [ESS: Acquire]
-    %%metro exit: right | custom, ncbi, unite, midori2, pr2
+    %%metro exit: right | custom, ncbi, unite, midori2, pr2, silva, gtdb, rdp
     custom_in[ ]
     get_ncbi[Get NCBI]
     get_unite[Get UNITE]
     get_midori2[Get MIDORI2]
     extract_coll[Extract Artifacts]
     get_pr2[Get PR2]
+    ess_get_silva[Get SILVA]
+    ess_get_gtdb[Get GTDB]
+    ess_get_rdp[Get RDP]
+    ess_import_rdp[Import RDP]
     get_midori2 -->|midori2| extract_coll
+    ess_get_rdp -->|rdp| ess_import_rdp
 end
 
 subgraph ess_seed [ESS: Curate & Iterate]
-    %%metro entry: left | custom, ncbi, unite, midori2, pr2
-    %%metro exit: right | custom, ncbi, unite, midori2, pr2
+    %%metro entry: left | custom, ncbi, unite, midori2, pr2, silva, gtdb, rdp
+    %%metro exit: right | custom, ncbi, unite, midori2, pr2, silva, gtdb, rdp
     %%metro group: Iterate Loop | extract_seq_segments, ess_derep, ess_cull
     derep_full[Dereplicate (Full)]
     extract_reads[Extract Initial Reads]
@@ -76,34 +84,37 @@ subgraph ess_seed [ESS: Curate & Iterate]
     extract_seq_segments[Extract Seq Segments]
     ess_derep[Dereplicate]
     ess_cull[Culling]
-    derep_full -->|custom,ncbi,unite,midori2,pr2| extract_reads
-    extract_reads -->|ncbi,unite,midori2,pr2| ess_setup
+    derep_full -->|custom,ncbi,unite,midori2,pr2,silva,gtdb,rdp| extract_reads
+    extract_reads -->|ncbi,unite,midori2,pr2,silva,gtdb,rdp| ess_setup
 end
-
 
 subgraph ess_iter [ESS: Train]
-    %%metro entry: left | custom, ncbi, unite, midori2, pr2
+    %%metro entry: left | custom, ncbi, unite, midori2, pr2, silva, gtdb, rdp
     ess_train[Train Classifier]
     ess_out[ ]
-    extract_seq_segments -->|custom,ncbi,unite,midori2,pr2| ess_derep
-    ess_derep -->|custom,ncbi,unite,midori2,pr2| ess_cull
-    ess_cull -->|custom,ncbi,unite,midori2,pr2| ess_train
-    ess_train -->|custom,ncbi,unite,midori2,pr2| ess_out
+    extract_seq_segments -->|custom,ncbi,unite,midori2,pr2,silva,gtdb,rdp| ess_derep
+    ess_derep -->|custom,ncbi,unite,midori2,pr2,silva,gtdb,rdp| ess_cull
+    ess_cull -->|custom,ncbi,unite,midori2,pr2,silva,gtdb,rdp| ess_train
+    ess_train -->|custom,ncbi,unite,midori2,pr2,silva,gtdb,rdp| ess_out
 end
 
-%% inter-section edges
-%% inter-section edges
+%% SSU inter-section edges
 get_silva -->|silva| full_derep
 get_gtdb -->|gtdb| full_derep
 import_rdp -->|rdp| full_derep
 full_cull -->|silva,gtdb,rdp| full_train
 amp_cull -->|silva,gtdb,rdp| amp_train
+
+%% ESS inter-section edges
 custom_in -->|custom| derep_full
 get_ncbi -->|ncbi| derep_full
 get_unite -->|unite| derep_full
 extract_coll -->|midori2| derep_full
 get_pr2 -->|pr2| derep_full
-derep_full -->|ncbi,unite,midori2,pr2| extract_reads
+ess_get_silva -->|silva| derep_full
+ess_get_gtdb -->|gtdb| derep_full
+ess_import_rdp -->|rdp| derep_full
+derep_full -->|ncbi,unite,midori2,pr2,silva,gtdb,rdp| extract_reads
 derep_full -->|custom| ess_setup
-extract_reads -->|ncbi,unite,midori2,pr2| ess_setup
-ess_setup -->|custom,ncbi,unite,midori2,pr2| extract_seq_segments
+extract_reads -->|ncbi,unite,midori2,pr2,silva,gtdb,rdp| ess_setup
+ess_setup -->|custom,ncbi,unite,midori2,pr2,silva,gtdb,rdp| extract_seq_segments

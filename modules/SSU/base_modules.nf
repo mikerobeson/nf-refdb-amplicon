@@ -85,7 +85,8 @@ process AMP_REG_EXTRACT {
         --p-r-primer ${rev_primer} \
         --p-n-jobs ${task.cpus} \
         --p-read-orientation 'forward' \
-        --o-reads '${db}_${amp_reg}_seqs.qza'
+        --o-reads '${db}_${amp_reg}_seqs.qza' \
+        --o-read-extraction-stats '${db}_${amp_reg}_extract_stats.qza'
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
