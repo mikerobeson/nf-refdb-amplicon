@@ -161,7 +161,7 @@ In the above usage, the primers shown are ITS1F / ITS2.
 Mitochondrial marker genes. Gene identifiers follow MIDORI2's internal codes — `srRNA`
 for 12S, `lrRNA` for 16S, `CO1` for COI.
 
-> [!NOTE]
+> [!CAUTION]
 > MIDORI2 remains available as a reference database source within the ESS workflow. However, recent changes to `qiime rescript get-midori2-data` in the version `2026.10` no longer support downloading individual mitochondrial marker genes directly. Instead, the full MIDORI2 mitochondrial reference dataset must be downloaded and processed before sequences for a specific target gene can be extracted. 
 > This may substantially increase runtime and storage requirements. Users who only need a specific marker gene may find it more efficient to generate a gene-specific MIDORI2 reference dataabse outside the workflow and provide it as a custom reference database.
 
