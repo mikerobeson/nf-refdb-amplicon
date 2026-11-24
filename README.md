@@ -144,7 +144,7 @@ nextflow run main.nf --help ess     # ESS workflow options
 | Type | Description |
 |------|-------------|
 | `ssu` | Build Naive Bayes classifiers from SSU rRNA gene reference databases (SILVA, GTDB, RDP) |
-| `ess` | Build classifiers using iterative `extract-seq-segments` approach (under development) |
+| `ess` | Build classifiers using iterative `extract-seq-segments` approach (NCBI, UNITE, MIDORI2, PR2, SILVA, GTDB, RDP) |
 
 
 ### Profiles
@@ -154,7 +154,6 @@ Combine an executor profile with an engine profile:
 |----------|--------|-------|-------------|
 | `local` | `conda` | `-profile local,conda` | Run locally with Conda |
 | `cluster` | `conda` | `-profile cluster,conda` | Submit to SLURM HPC with Conda |
-| `local` | `docker` | `-profile local,docker` | Run locally with Docker (recommended for macOS/Linux desktops) |
 
 > [!NOTE]
 > Docker support is not currently available; but it is planned for a future release.
